@@ -65,4 +65,5 @@ class QAEngine:
         )
 
     def answer(self, query: str) -> str:
-        return self.qa_chain.invoke({"query": query})
+        result = self.qa_chain.invoke({"query": query})
+        return result["result"]
