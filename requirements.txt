@@ -1,0 +1,8 @@
+requests
+beautifulsoup4
+python-telegram-bot==20.0
+langchain
+sentence-transformers
+faiss-cpu
+transformers
+torch
