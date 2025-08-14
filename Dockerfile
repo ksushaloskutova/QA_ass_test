@@ -12,11 +12,13 @@ WORKDIR /app
 # Копируем файлы
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+RUN pip install langchain-community
+RUN pip install langchain-huggingface
 
-COPY app ./app
+COPY app/ .
 COPY .env .
 
 # Установим переменные окружения
 ENV TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
 
-CMD ["python", "-u", "app/main.py"]
+CMD ["python", "-m", "main"]
