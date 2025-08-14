@@ -3,8 +3,8 @@ import os
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 HTML_URLS = [
-    "https://en.wikipedia.org/wiki/Python_(programming_language)",
-    "https://ru.wikipedia.org/wiki/Python"
+    "https://abit.itmo.ru/program/master/ai",
+    "https://abit.itmo.ru/program/master/ai_product"
 ]
 
 CHUNK_SIZE = 500
