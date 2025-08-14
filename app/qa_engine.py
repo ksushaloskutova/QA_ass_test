@@ -2,9 +2,11 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 from langchain_community.llms import HuggingFacePipeline
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 import config, html_parser
+
 
 class QAEngine:
     def __init__(self):
@@ -31,14 +33,36 @@ class QAEngine:
         )
         self.db = FAISS.from_documents(docs, embedding_model)
 
-        print("🧠 Загрузка языковой модели...")
-        tokenizer = AutoTokenizer.from_pretrained("sberbank-ai/rugpt3small_based_on_gpt2")
-        model = AutoModelForCausalLM.from_pretrained("sberbank-ai/rugpt3small_based_on_gpt2")
-        pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, max_new_tokens=150)
-        llm = HuggingFacePipeline(pipeline=pipe)
+        print("🧠 Загрузка языковой модели cointegrated/rut5-base...")
+        tokenizer = AutoTokenizer.from_pretrained("cointegrated/rut5-small")
+        model = AutoModelForSeq2SeqLM.from_pretrained("cointegrated/rut5-small")
 
-        retriever = self.db.as_retriever()
-        self.qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever, chain_type="stuff")
+        pipe = pipeline(
+            "text2text-generation",
+            model=model,
+            tokenizer=tokenizer,
+            max_length=512,
+            do_sample=False
+        )
+        self.llm = HuggingFacePipeline(pipeline=pipe)
+
+        self.retriever = self.db.as_retriever(search_kwargs={"k": 3})
+
+        self.prompt = PromptTemplate(
+            template=(
+                "Контекст:\n{context}\n\n"
+                "Вопрос:\n{question}\n\n"
+                "Ответ:"
+            ),
+            input_variables=["context", "question"]
+        )
+
+        self.qa_chain = RetrievalQA.from_chain_type(
+            llm=self.llm,
+            retriever=self.retriever,
+            chain_type="refine",
+            chain_type_kwargs={"prompt": self.prompt}
+        )
 
     def answer(self, query: str) -> str:
-        return self.qa_chain.run(query)
+        return self.qa_chain.invoke({"query": query})
