@@ -44,6 +44,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             response = qa_engine.answer(user_input, program)
 
+        if not isinstance(response, str):
+            response = str(response)
+
         if len(response) > 4000:
             response = response[:4000] + "...\n\n🔹 Ответ был обрезан из-за длины."
 

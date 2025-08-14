@@ -87,3 +87,8 @@ class QAEngine:
             f"Программа AI Product:\n{ai_prod_answer}"
         )
 
+
+    def answer(self, query: str) -> str:
+        result = self.qa_chain.invoke({"query": query})
+        return result["result"]
+
