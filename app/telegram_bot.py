@@ -17,6 +17,8 @@ qa_engine = QAEngine()
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_input = update.message.text
     response = qa_engine.answer(user_input)
+    if len(response) > 4000:
+        response = response[:4000] + "...\n\n🔹 Ответ был обрезан из-за длины."
     await update.message.reply_text(response)
 
 def run_telegram_bot():

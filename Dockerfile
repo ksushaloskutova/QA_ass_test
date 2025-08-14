@@ -14,7 +14,26 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 RUN pip install langchain-community
 RUN pip install langchain-huggingface
+RUN pip install requests_html
+RUN pip install lxml_html_clean
 
+
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libnss3 \
+    libfontconfig1 \
+    libxss1 \
+    libasound2 \
+    libxtst6 \
+    fonts-liberation \
+    libappindicator3-1 \
+    libxrandr2 \
+    libxdamage1 \
+    xdg-utils \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install pdfplumber
 COPY app/ .
 COPY .env .
 
