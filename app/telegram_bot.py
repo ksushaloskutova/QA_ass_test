@@ -7,6 +7,22 @@ qa_engine = QAEngine()
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_input = update.message.text
+
+    # Простая проверка на релевантность вопроса магистратурам
+    keywords = [
+        "магистратур",
+        "магистр",
+        "магистерск",
+        "ai",
+        "ai product",
+    ]
+
+    if not any(keyword in user_input.lower() for keyword in keywords):
+        await update.message.reply_text(
+            "Я могу рассказывать только про магистерские программы ИТМО: AI и AI Product"
+        )
+        return
+
     try:
         response = qa_engine.answer(user_input)
 
