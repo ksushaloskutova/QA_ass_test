@@ -13,10 +13,14 @@ class QAEngine:
         print("🔄 Загружаю и обрабатываю учебные планы...")
 
         documents = []
+        self.course_data = []
         for url in config.PDF_URLS:
             text = html_parser.fetch_pdf_text(url)
             if text:
                 documents.append(text)
+                parsed = html_parser.parse_course_data(text)
+                if parsed:
+                    self.course_data.extend(parsed)
 
         if not documents:
             raise ValueError("❌ Не удалось загрузить ни одного учебного плана.")
@@ -65,4 +69,5 @@ class QAEngine:
         )
 
     def answer(self, query: str) -> str:
-        return self.qa_chain.invoke({"query": query})
+        result = self.qa_chain.invoke({"query": query})
+        return result["result"]
